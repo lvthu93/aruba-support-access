@@ -1,0 +1,45 @@
+using System;
+using System.Text;
+using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Math.EC;
+using Org.BouncyCastle.Utilities.Encoders;
+
+public static class ArubaAuth
+{
+    // Thông số Curve rút gọn (p, a, b, order, privKey)
+    static readonly BigInteger P = new("FE4382C5413A02FF", 16), A = new("5BA3091245C856AB", 16), 
+                               B = new("C2AB76EF7FE1D7F2", 16), N = new("18321631499947426219", 10),
+                               K = new("2826820123527714983", 10);
+    static readonly ECCurve Curve = new FpCurve(P, A, B, N, BigInteger.One);
+
+    public static string GetPass(string user, string token)
+    {
+        var ux = new BigInteger(token.Replace("-", ""), 16);
+        
+        // Uncompress Y: y = sqrt(x^3 + ax + b) % p
+        var ySq = ux.Multiply(ux).Multiply(ux).Add(A.Multiply(ux)).Add(B).Mod(P);
+        var uy = ySq.ModPow(P.Add(BigInteger.One).ShiftRight(2), P);
+        if (!uy.TestBit(0)) uy = P.Subtract(uy); // Logic khớp Python
+
+        // ECDH & Shared Secret
+        var sk = Curve.CreatePoint(ux, uy).Multiply(K).Normalize().AffineXCoord.ToBigInteger().ToByteArrayUnsigned();
+        
+        // Double HMAC-SHA1
+        var raw_dg = Hmac(new byte[20], sk);
+        var final = Hmac(raw_dg, Encoding.UTF8.GetBytes(user).Concat(new byte[] { 1 }).ToArray());
+
+        return Hex.ToHexString(final)[..16]; // Lấy 16 ký tự đầu
+    }
+
+    private static byte[] Hmac(byte[] key, byte[] data)
+    {
+        var h = new HmacSha1();
+        h.Init(new KeyParameter(key));
+        h.BlockUpdate(data, 0, data.Length);
+        var res = new byte[h.GetMacSize()];
+        h.DoFinal(res, 0);
+        return res;
+    }
+}
