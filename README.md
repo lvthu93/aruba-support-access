@@ -29,3 +29,4 @@ Switching to Full Access
 root
 ```
 
+NOTE: Required install tinyec and nummaster
