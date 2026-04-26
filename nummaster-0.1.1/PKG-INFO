@@ -1,0 +1,21 @@
+Metadata-Version: 1.1
+Name: nummaster
+Version: 0.1.1
+Summary: A library for computational number theory , contains functions for prime numbers , factorizations and other number theortic functions
+Home-page: UNKNOWN
+Author: Shivam Patel
+Author-email: patelshivam99@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Keywords: number-theory,number,theory,computation,primes,shivam,patel
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
